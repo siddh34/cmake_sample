@@ -56,7 +56,7 @@ public:
         return price;
     }
 
-    std::pair<double, double> calculateLTCG(int selling_year)
+    std::pair<double, double> calculateLTCGOldScheme(int selling_year)
     {
         double selling_price = calculateSellingPrice(selling_year);
         double inflation_adjusted_price = initial_cost_price;
@@ -69,31 +69,52 @@ public:
         double ltcg = actual_profit * 0.20;
         return {selling_price, ltcg};
     }
+
+    std::pair<double, double> calculateLTCGNewScheme(int selling_year)
+    {
+        double selling_price = calculateSellingPrice(selling_year);
+        double actual_profit = selling_price - initial_cost_price;
+        double ltcg = actual_profit * 0.125;
+        return {selling_price, ltcg};
+    }
+
+    void compareTaxSchemes(int selling_year)
+    {
+        auto [selling_price_old, ltcg_old] = calculateLTCGOldScheme(selling_year);
+        auto [selling_price_new, ltcg_new] = calculateLTCGNewScheme(selling_year);
+
+        std::cout << "Old Scheme LTCG: Rs " << ltcg_old << std::endl;
+        std::cout << "New Scheme LTCG: Rs " << ltcg_new << std::endl;
+
+        if (ltcg_old > ltcg_new)
+        {
+            std::cout << "Old scheme leads to higher taxes by Rs " << (ltcg_old - ltcg_new) << std::endl;
+        }
+        else
+        {
+            std::cout << "New scheme leads to higher taxes by Rs " << (ltcg_new - ltcg_old) << std::endl;
+        }
+    }
 };
 
 int main()
 {
-
     double initial_cost_price;
     std::cout << "Enter the initial cost price: ";
     std::cin >> initial_cost_price;
-
     int purchase_year;
     std::cout << "Enter the year of purchase: ";
     std::cin >> purchase_year;
-
-    std::string csv_file = "inflation_property_growth.csv";
+    std::string csv_file = "rates.csv"; // CSV file containing rates from 2001 to 2030
 
     RealEstateInvestment investment(initial_cost_price, purchase_year);
     investment.loadRatesFromCSV(csv_file);
+
     int selling_year;
     std::cout << "Enter the year of selling: ";
     std::cin >> selling_year;
 
-    auto [selling_price, ltcg] = investment.calculateLTCG(selling_year);
-
-    std::cout << "Estimated Selling Price: Rs " << selling_price << std::endl;
-    std::cout << "Long-term Capital Gains Tax (LTCG): Rs " << ltcg << std::endl;
+    investment.compareTaxSchemes(selling_year);
 
     return 0;
 }
