@@ -1,5 +1,9 @@
 # cmake_sample
 
+A simple selling price calculator using c++
+
+## How to run
+
 Make debug binary
 
 ```sh
@@ -11,6 +15,8 @@ Make Release Binary
 ```sh
 make release
 ```
+
+## Clean Up
 
 Clean up the binaries
 
